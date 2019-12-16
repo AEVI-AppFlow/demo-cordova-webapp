@@ -1,0 +1,7 @@
+<div class="mt-4" *ngIf="paymentSettings | async as ps">
+    <div class="list-group">
+        <button type="button" class="list-group-item list-group-item-action" *ngFor="let flowService of ps.allServices.paymentFlowServiceInfoList" (click)="openFlowService($event, flowService)">
+            {{flowService.displayName}}
+        </button>
+    </div>
+</div>

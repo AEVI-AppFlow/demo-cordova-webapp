@@ -1,0 +1,19 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title">Flow Config - {{flowConfig.name}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <small class="text-muted">{{flowConfig.type}}</small>
+        <p>{{flowConfig.description}}</p>
+        <h4>Stages</h4>
+        <div class="mt-4" *ngFor="let stage of flowConfig.stages">
+            <h6 class="d-flex w-100 justify-content-between">{{stage.name}}<small class="text-muted">{{stage.appExecutionType}}</small></h6>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item py-0" *ngFor="let app of stage.flowApps">{{app.id}}</li>
+            </ul>
+        </div>
+    </div>
+</div>

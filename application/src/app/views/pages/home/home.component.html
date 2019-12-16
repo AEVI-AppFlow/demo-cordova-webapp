@@ -1,0 +1,21 @@
+<div class="card mt-2" *ngIf="processingServiceInstalled | async as installed; else loading">
+    <div class="card-body">
+        <h5 class="card-title">AppFlow Version: {{apiVersion | async}}</h5>
+        <p>FPS Version: {{processingServiceVersion | async}}</p>
+    </div>
+    <div class="card-body" *ngIf="paymentSettings | async as ps">
+        <h5 class="card-title">Flow Configurations</h5>
+        <ul>
+            <li *ngFor="let flowConfig of ps.flowConfigurations.flowConfigurations">{{flowConfig.name}}</li>
+        </ul>
+    </div>
+</div>
+
+<ng-template #loading>
+    <div class="card mt-2">
+        <div class="card-body">
+            <h5>ERROR</h5>
+            <p>FPS NOT INSTALLED!!</p>
+        </div>
+    </div>
+</ng-template>

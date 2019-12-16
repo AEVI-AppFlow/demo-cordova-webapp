@@ -1,0 +1,15 @@
+<div class="table-responsive" *ngIf="additionalData">
+    <table class="table table-sm table-bordered">
+        <thead *ngIf="title">
+            <tr>
+                <th colspan="2">{{title}}</th>
+            </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let data of additionalData.data | keyvalue">
+            <td>{{data.key}}</td>
+            <td>{{data.value.value}}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>

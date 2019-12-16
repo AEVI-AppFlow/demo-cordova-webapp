@@ -1,0 +1,33 @@
+<nav class="navbar navbar-expand-md navbar-dark bg-dark">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsAppFlowDemo" aria-controls="navbarsAppFlowDemo" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand" routerLink="home">AppFlow WebApp Demonstrator</a>
+
+    <div class="collapse navbar-collapse" id="navbarsAppFlowDemo">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show" routerLinkActive="active">
+                <a class="nav-link" routerLink="/home">Home</a>
+            </li>
+            <li class="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show" routerLinkActive="active">
+                <a class="nav-link" routerLink="/overview">System overview</a>
+            </li>
+            <li class="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show" routerLinkActive="active">
+                <a class="nav-link" routerLink="/services">Flow services</a>
+            </li>
+            <li class="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show" routerLinkActive="active">
+                <a class="nav-link" routerLink="/payments">Payments</a>
+            </li>
+            <li class="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show" routerLinkActive="active">
+                <a class="nav-link" routerLink="/nonpayments">Non-payments</a>
+            </li>
+            <li class="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show" routerLinkActive="active">
+                <a class="nav-link" routerLink="/events">System events</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <router-outlet></router-outlet>
+</div>
