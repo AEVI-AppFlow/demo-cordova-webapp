@@ -13,9 +13,6 @@
     "moduleResolution": "node",
     "importHelpers": true,
     "target": "es5",
-    "types": [
-      "node"
-    ],
     "typeRoots": [
       "node_modules/@types"
     ],

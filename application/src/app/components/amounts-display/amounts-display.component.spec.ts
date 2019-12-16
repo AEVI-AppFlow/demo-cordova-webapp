@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AmountsDisplayComponent } from './amounts-display.component';
+import { AmountFormatComponent } from '../amount-format/amount-format.component';
 
 describe('AppAmountsDisplayComponent', () => {
   let component: AmountsDisplayComponent;
@@ -8,7 +9,10 @@ describe('AppAmountsDisplayComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AmountsDisplayComponent ]
+      declarations: [ 
+        AmountsDisplayComponent,        
+        AmountFormatComponent
+      ]
     })
     .compileComponents();
   }));
