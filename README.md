@@ -54,6 +54,18 @@ npm run build
 
 Will run both the angular build and cordova android build. See the package.json for other scripts.
 
+## Browser based simulation
+
+This application can be run the in the browser for testing and development purposes. The appflow-cordova-pluin must first be installed for the `browser` plaform.
+
+Once the correct platform plugin is installed the application can be run using:
+
+```
+npm run serve
+```
+
+This will compile and serve an instance of the application for running in a browser. The instance will be served on `http://localhost:3000`. Your browser should be automatically started and changes to the source code will be automatically watched for. After a change the code will be recompiled and the browser version should automatically refresh via browser-sync
+
 ## Bugs and Feedback
 For bugs, feature requests and questions please use GitHub Issues.
 
