@@ -73,7 +73,7 @@ For bugs, feature requests and questions please use GitHub Issues.
 Contributions to any of our repos via pull requests are welcome. We follow the git flow branching model.
 
 ## LICENSE
-Copyright 2019 AEVI International GmbH
+Copyright 2020 AEVI International GmbH
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
