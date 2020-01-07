@@ -1,0 +1,31 @@
+<div *ngIf="card && !card.isEmpty()">
+    <table class="table table-sm table-bordered">
+        <thead *ngIf="title">
+            <tr>
+                <th colspan="2">{{title}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngIf="card.cardholderName">
+                <td>Cardholder</td>
+                <td>{{card.cardholderName}}</td>
+            </tr>        
+            <tr *ngIf="card.maskedPan">
+                <td>PAN</td>
+                <td>{{card.maskedPan}}</td>
+            </tr>
+            <tr *ngIf="card.expiryDate">
+                <td>Expiry</td>
+                <td>{{card.expiryDate}}</td>
+            </tr>
+            <tr *ngIf="card.cardToken">
+                <td>Token</td>
+                <td>{{card.cardToken.value}}</td>
+            </tr>
+            <tr *ngFor="let additionalData of card.additionalData.data | keyvalue ">
+                <td>{{additionalData.key}}</td>
+                <td>{{additionalData.value.value}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
