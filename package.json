@@ -1,0 +1,43 @@
+{
+  "name": "com.aevi.sdk.flow",
+  "displayName": "AppFlowWebAppDemonstrator",
+  "version": "1.0.0",
+  "description": "A demonstration application that shows how to use the Typescript version of the AppFlow API.",
+  "main": "index.js",
+  "watch": {
+    "build": {
+      "patterns": "application/src",
+      "extensions": "ts,html,scss"
+    }
+  },
+  "scripts": {
+    "test": "cd application && npm t",
+    "build": "(cd application && ng build) && cordova build browser",
+    "watch": "npm-watch build",
+    "serve": "npm-watch build & browser-sync start --config bs-config.js",
+    "deploy": "(cd application && ng build) && cordova run android"
+  },
+  "keywords": [
+    "ecosystem:cordova"
+  ],
+  "author": "Brett Cherrington",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "appflow-cordova-plugin": "0.0.3",
+    "cordova-android": "^8.1.0",
+    "cordova-browser": "^6.0.0",
+    "cordova-plugin-whitelist": "^1.3.4",
+    "npm-watch": "^0.6.0"
+  },
+  "devDependencies": {},
+  "cordova": {
+    "plugins": {
+      "cordova-plugin-whitelist": {},
+      "appflow-cordova-plugin": {}
+    },
+    "platforms": [
+      "android",
+      "browser"
+    ]
+  }
+}

@@ -1,0 +1,33 @@
+<div class="table-responsive">
+    <table class="table table-sm table-bordered">
+        <thead *ngIf="title || outcome">
+            <tr>
+                <th colspan="2">
+                    <div class="d-flex justify-content-between">
+                        {{title}}
+                        <div><span *ngIf="outcome" [ngClass]="{'badge': true, 'badge-success': outcome == 'APPROVED', 'badge-danger' : outcome == 'DECLINED'}">&nbsp;{{outcome}}&nbsp;</span></div>
+                    </div>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngIf="outcomeMessage">
+                <td colspan="2">{{outcomeMessage}}</td>
+            </tr>
+        </tbody>
+        <tbody *ngIf="amounts">
+            <tr>
+                <td>Base Amount</td>
+                <td><av-amount-format [amount]="amounts.baseAmount" [currency]="amounts.currency"></av-amount-format></td>
+            </tr>
+            <tr *ngFor="let additionalAmount of amounts.additionalAmounts | keyvalue">
+                <td>{{additionalAmount.key }}</td>
+                <td><av-amount-format [amount]="additionalAmount.value" [currency]="amounts.currency"></av-amount-format></td>
+            </tr>
+            <tr class="table-info">
+                <td>Total Amount</td>
+                <td><av-amount-format [amount]="amounts.getTotalAmountValue()" [currency]="amounts.currency"></av-amount-format></td>
+            </tr>
+        </tbody>
+    </table>
+</div>

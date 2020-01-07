@@ -1,0 +1,59 @@
+<div *ngIf="paymentSettings | async as ps">
+    <div class="card mt-2">
+        <div class="card-header">
+            Overview
+        </div>
+        <div class="card-body">
+            Payment Initiation API version: {{apiVersion | async}}<br/>
+            Flow Processing Service version: {{processingServiceVersion | async}}<br/>
+            Number of payment flow services: {{ps.allServices.paymentFlowServiceInfoList.length}} <span class="badge badge-primary float-right" routerLink="/services">Details</span><br/>            
+        </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                <h5>Custom request types</h5>
+                <ul class="list-group list-group-flush">                    
+                    <li class="list-group-item py-0" *ngFor="let crt of ps.allServices.supportedRequestTypes">{{crt}}</li>
+                </ul>
+            </li>
+            <li class="list-group-item">
+                <h5>All supported currencies</h5>
+                <ul class="list-group list-group-flush">                    
+                    <li class="list-group-item py-0" *ngFor="let cur of ps.allServices.supportedCurrencies">{{cur}}</li>
+                </ul>
+            </li>
+            <li class="list-group-item">        
+                <h5>All supported payment methods</h5>
+                <ul class="list-group list-group-flush">                    
+                    <li class="list-group-item py-0" *ngFor="let paym of ps.allServices.supportedPaymentMethods">{{paym}}</li>
+                </ul>
+            </li>
+            <li class="list-group-item">
+                <h5>All supported data keys</h5>
+                <ul class="list-group list-group-flush">                    
+                    <li class="list-group-item py-0" *ngFor="let dkey of ps.allServices.supportedDataKeys">{{dkey}}</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <div class="card mt-2">
+        <div class="card-header">
+            Flow configs <span class="badge badge-primary badge-pill">{{ps.flowConfigurations.flowConfigurations.length}}</span>
+        </div>
+        <div class="list-group list-group-flush">
+            <a class="list-group-item list-group-item-action flex-column align-items-start" *ngFor="let flowConfig of ps.flowConfigurations.flowConfigurations" (click)="openFlowConfig($event, flowConfig)">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5>{{flowConfig.name}}</h5>
+                    <small>v{{flowConfig.version}}</small>
+                </div>
+                <p>{{flowConfig.description}}</p>            
+            </a>
+        </div>    
+    </div>
+
+    <div class="card mt-2">
+        <div class="card-header">
+            FPS Settings
+        </div>
+        <av-fps-settings [fpsSettings]="ps.fpsSettings"></av-fps-settings>
+    </div>
+</div>

@@ -1,0 +1,47 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title">Payment Response</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body" *ngIf="paymentResponse">
+        <div class="d-flex justify-content-between">
+            <h6>{{paymentResponse.getFlowType() | titlecase}}</h6>
+            <h6>{{paymentResponse.getDisplayDateTime()}}</h6>
+        </div>
+        <div class="d-flex justify-content-between mb-2">
+            <p><span [ngClass]="{'badge': true, 'badge-success': paymentResponse.outcome == 'FULFILLED', 'badge-warning': paymentResponse.outcome == 'PARTIALLY_FULFILLED','badge-danger': paymentResponse.outcome == 'FAILED'}">&nbsp;{{paymentResponse.outcome}}&nbsp;</span></p>
+            <p class="lead"><av-amount-format [amount]="paymentResponse.totalAmountsProcessed.getTotalAmountValue()" [currency]="paymentResponse.getCurrency()"></av-amount-format></p>
+        </div>
+
+        <av-amounts-display *ngIf="paymentResponse.outcome == 'FULFILLED'" title="Requested Amounts from POS" [amounts]="paymentResponse.originatingPayment.amounts"></av-amounts-display>
+
+        <div *ngIf="paymentResponse.outcome == 'PARTIALLY_FULFILLED'">
+            <div *ngFor="let transaction of paymentResponse.getTransactions()">
+                <av-amounts-display title="Requested Amounts" [amounts]="transaction.requestedAmounts"></av-amounts-display>
+                <av-amounts-display title="Processed Amounts" [amounts]="transaction.getProcessedAmounts()"></av-amounts-display>
+                <av-amounts-display title="Remaining Amounts" [amounts]="transaction.getRemainingAmounts()"></av-amounts-display>
+            </div>
+            <av-basket *ngIf="paymentResponse.getRequestedBasket()" title="Requested Basket" [basket]="paymentResponse.getRequestedBasket()" [currency]="paymentResponse.getCurrency()"></av-basket>
+            <av-basket *ngFor="let basket of paymentResponse.getBaskets()" title="" [basket]="basket" [currency]="paymentResponse.getCurrency()"></av-basket>
+        </div>
+
+        <div *ngFor="let transactionResponse of paymentResponse.getTransactionResponses()">        
+            <av-amounts-display [title]="'Paid by: ' + transactionResponse.paymentMethod | titlecase" [amounts]="transactionResponse.amounts" [outcome]="transactionResponse.outcome" [outcomeMessage]="transactionResponse.outcomeMessage"></av-amounts-display>
+            <av-credit-card title="Card details" [card]="transactionResponse.card"></av-credit-card>            
+            <av-additional-data *ngIf="!transactionResponse.references.isEmpty()" title="References" [additionalData]="transactionResponse.references"></av-additional-data>
+        </div>
+
+        <div *ngIf="paymentResponse.originatingPayment.additionalData && !paymentResponse.originatingPayment.additionalData.isEmpty()">
+            <h5>Additional Data</h5>
+            <av-additional-data [additionalData]="paymentResponse.originatingPayment.additionalData"></av-additional-data>
+        </div>
+
+        <av-customer-display *ngIf="paymentResponse.originatingPayment.customer" [customer]="paymentResponse.originatingPayment.customer"></av-customer-display>
+
+        <div class="row ml-4 mr-4" *ngIf="paymentResponse.outcome == 'FULFILLED' || paymentResponse.outcome == 'PARTIALLY_FULFILLED'">
+            <button type="button" class="col btn btn-danger btn-bold m-2" ngbAutofocus (click)="doVoid()">Void</button>
+        </div>
+    </div>
+</div>

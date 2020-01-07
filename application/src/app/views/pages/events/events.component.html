@@ -1,0 +1,14 @@
+<div class="card mt-2">
+    <div class="card-body">
+        <h3 class="card-title">System events</h3>
+        <i>Showing the last 5 flow events</i>
+
+        <div class="list-group">
+            <div class="list-group-item mb-1" *ngFor="let flowEventRecord of (flowEvents | async)" >
+                <h5 class="d-flex justify-content-between">{{flowEventRecord.flowEvent.type}} <small>{{flowEventRecord.timestamp}}</small></h5>
+                <p>Triggered by: {{flowEventRecord.flowEvent.eventTrigger}}</p>
+                <av-additional-data [additionalData]="flowEventRecord.flowEvent.data"></av-additional-data>
+            </div>
+        </div>
+    </div>
+</div>

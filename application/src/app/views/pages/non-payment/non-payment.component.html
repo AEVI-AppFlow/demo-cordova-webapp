@@ -1,0 +1,52 @@
+<div class="card mt-2" *ngIf="paymentSettings | async as ps">
+    <div class="card-body">
+        <form>
+            <div class="form-group">
+                <label for="flowName">Choose request type*</label>
+                <select class="form-control" id="flowName" [(ngModel)]="flowName" name="flowName">
+                    <option value="{{flow.type}}" *ngFor="let flow of isUseableFlow(ps.flowConfigurations.flowConfigurations)">{{flow.name}}</option>
+                </select>
+                <small id="transactionHelpBlock" class="form-text text-muted" *ngIf="flowName == 'reversal' && !hasPaymentResponse">
+                    Please complete a payment first before attempting a reversal
+                </small>
+            </div>
+            <div class="form-group" *ngIf="flowName == 'receiptDelivery'">
+                <label for="flowName">Choose a sub type for receiptDelivery*</label>
+                <select class="form-control" id="subType" [(ngModel)]="subType" name="subType" aria-describedby="transactionHelpBlock">
+                    <option value="cash">Cash Receipt</option>
+                    <option value="redeliver">Redeliver</option>
+                </select>
+                <small id="transactionHelpBlock" class="form-text text-muted" *ngIf="subtype == 'redeliver' && !hasPaymentResponse">
+                    Please complete a payment first before attempting a receipt redelivery
+                </small>
+            </div>
+            <div class="form-check mb-4">
+                <input class="form-check-input" type="checkbox" [(ngModel)]="runInBackground" id="runInBackground" name="runInBackground">
+                <label class="form-check-label" for="runInBackground">
+                Process request in a background flow
+                </label>
+            </div>
+            <div *ngIf="lastResponse && ((flowName == 'receiptDelivery' && subType == 'redeliver') || flowName == 'reversal')" class="callout callout-primary">
+                <h4>Last Payment Response</h4>
+                <div class="d-flex justify-content-between">
+                    <h6>{{lastResponse.getFlowType() | titlecase}}</h6>
+                    <h6>{{lastResponse.getDisplayDateTime()}}</h6>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <p><span [ngClass]="{'badge': true, 'badge-success': lastResponse.outcome == 'FULFILLED', 'badge-warning': lastResponse.outcome == 'PARTIALLY_FULFILLED','badge-danger': lastResponse.outcome == 'FAILED'}">&nbsp;{{lastResponse.outcome}}&nbsp;</span></p>
+                    <p class="lead"><av-amount-format [amount]="lastResponse.totalAmountsProcessed.getTotalAmountValue()" [currency]="lastResponse.getCurrency()"></av-amount-format></p>
+                </div>
+                <div>
+                    <p *ngIf="flowName == 'receiptDelivery'">Receipt will be re-delivered for the payment response shown above</p>
+                    <p *ngIf="flowName == 'reversal'">This will attempt to reverse the payment response shown above</p>    
+                </div>
+            </div>
+            <div *ngIf="!lastResponse && ((flowName == 'receiptDelivery' && subType == 'redeliver') || flowName == 'reversal')"class="callout callout-danger">
+                <h4>No payment response</h4>
+                <p>There is no payment response stored by this application yet. <a routerLink="/payments">Please make a payment or refund first.</a></p>
+            </div>
+            <button class="btn btn-primary" (click)="makeRequest()" [disabled]="!flowName || requestInProgress">Process request</button>
+        </form>
+    </div>
+</div>
+
