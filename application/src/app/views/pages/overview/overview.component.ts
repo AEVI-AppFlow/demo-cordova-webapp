@@ -16,9 +16,9 @@ export class OverviewComponent implements OnInit {
 
   pa: PaymentApi;
 
-  processingServiceInstalled: Observable<boolean>;
-  processingServiceVersion: Observable<string>;
-  apiVersion: Observable<string>;
+  processingServiceInstalled: Promise<boolean>;
+  processingServiceVersion: Promise<string>;
+  apiVersion: Promise<string>;
   paymentSettings: Observable<PaymentSettings>;
 
   constructor(private appFlow: AppFlowService, private modalService: NgbModal) {

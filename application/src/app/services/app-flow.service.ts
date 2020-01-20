@@ -1,8 +1,9 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable, OnDestroy, NgZone } from '@angular/core';
 import { Observable, NEVER, concat, of, Subscription, ReplaySubject, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { PaymentApi, Payment, PaymentResponse, PaymentClient, FlowEvent, FlowTypes, Request, Response } from 'appflow-payment-initiation-api';
+import { PaymentApi, Payment, PaymentResponse, PaymentClient, FlowEvent, FlowTypes, Request, Response, FlowException } from 'appflow-payment-initiation-api';
 import { PaymentApiCordova } from 'appflow-cordova-plugin';
 
 import { PaymentResponseComponent } from 'src/app/components/payment-response/payment-response.component';
@@ -21,6 +22,9 @@ export class FlowEventRecord {
   }
 }
 
+/**
+ * A service class so that we only subscribe to app flow observables in one place that can be shared throughout the application
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -28,23 +32,34 @@ export class AppFlowService implements OnDestroy {
 
   private responseSubscription: Subscription;
   private paymentResponseSubscription: Subscription;
+  private paymentErrorSubscription: Subscription;
+  private genericErrorSubscription: Subscription;
   
   private pa: PaymentApi;
   private lastPaymentResponse: PaymentResponse;
   private flowEventsArr: Array<FlowEventRecord> = new Array();  
 
-  private responseSubject = new Subject<Response>();
-  private paymentResponseSubject = new Subject<PaymentResponse>();
+  private paymentInProgressSubject = new ReplaySubject<boolean>(1);
 
-  constructor() { 
+  constructor(private modalService: NgbModal, private zone: NgZone) { 
     this.pa = PaymentApiCordova.getInstance();
     Object.assign(this.flowEventsArr, JSON.parse(localStorage.getItem(LAST_EVENTS)));
   
+    this.paymentInProgressSubject.next(false);
+
     // listen for void responses
     this.responseSubscription = this.getPaymentClient().subscribeToResponses().subscribe((response) => {
       console.log("Got non-payment response");
       console.log(response)
-      this.responseSubject.next(response);
+      this.zone.run(() => { // this is required to allow the modal to popup correctly in the angular zone
+        const modalRef = this.modalService.open(ResponseComponent);
+        modalRef.componentInstance.response = response;
+        modalRef.result.then((modalResponse) => {
+          this.paymentInProgressSubject.next(false);
+        }, (reason) => {
+          this.paymentInProgressSubject.next(false);
+        });      
+      });
     });
 
     // list for payment responses
@@ -52,12 +67,36 @@ export class AppFlowService implements OnDestroy {
       console.log("Got payment response");
       console.log(paymentResponse)
       this.setLastResponse(paymentResponse);
-      this.paymentResponseSubject.next(paymentResponse);
+      this.zone.run(() => { // this is required to allow the modal to popup correctly in the angular zone
+        const modalRef = this.modalService.open(PaymentResponseComponent);
+        modalRef.componentInstance.setPaymentResponse(paymentResponse);
+        modalRef.result.then((voidResponse) => {
+          this.paymentInProgressSubject.next(false);
+          if(voidResponse) {
+            // a request from the user to void this request
+            this.sendVoidRequest(voidResponse);
+          }
+        }, (reason) => {
+          this.paymentInProgressSubject.next(false);
+        });      
+      });
+    });
+
+    this.paymentErrorSubscription = this.getPaymentClient().subscribeToPaymentResponseErrors().subscribe((error) => {
+      console.log("Received an error from a payment request");
+      console.log(error);
+      // TODO show error in app
+    });
+
+    this.genericErrorSubscription = this.getPaymentClient().subscribeToResponseErrors().subscribe((error) => {
+      console.log("Received an error from a generic request");
+      console.log(error);
+      // TODO show error in app
     });
   }
 
-  public sendVoidRequest(voidResponse: PaymentResponse) {
-    var request = this.createVoidRequest(voidResponse);
+  public sendVoidRequest(responseToVoid: PaymentResponse) {
+    var request = this.createVoidRequest(responseToVoid);
     if(request) {
       this.getPaymentClient().initiateRequest(request).then((response) => {
         console.log(response);
@@ -72,6 +111,8 @@ export class AppFlowService implements OnDestroy {
   }
 
   private createVoidRequest(voidResponse: PaymentResponse) {
+    // Get the relevant Transaction details to send to the processing service so that it can be voided
+    // We know for our sample payment service there will only ever be 1 Transaction object. This may or may not be the case for other Payment Services
     if (voidResponse != null && voidResponse.transactions.length > 0 && voidResponse.transactions[0].hasResponses()) {
       var firstTransaction = voidResponse.transactions[0];
       if (firstTransaction == null || firstTransaction.getPaymentAppResponse() == null) {
@@ -91,11 +132,23 @@ export class AppFlowService implements OnDestroy {
   }
 
   public initiatePayment(payment: Payment) {
+    this.paymentInProgressSubject.next(true);
     this.getPaymentClient().initiatePayment(payment).then((response) => {
       console.log(response);
     }).catch((error)  => {
       // TODO show error in app
       console.log("Failed to initiate payment");
+      console.log(error);
+    });
+  }
+
+  public initiateRequest(request: Request) {
+    this.paymentInProgressSubject.next(true);
+    this.getPaymentClient().initiateRequest(request).then((response) => {
+      console.log(response);
+    }).catch((error)  => {
+      // TODO show error in app
+      console.log("Failed to initiate generic request");
       console.log(error);
     });
   }
@@ -131,12 +184,8 @@ export class AppFlowService implements OnDestroy {
     );
   }
 
-  public observePaymentResponses(): Observable<PaymentResponse> {
-    return this.paymentResponseSubject.asObservable();
-  }
-
-  public observeResponses(): Observable<Response> {
-    return this.responseSubject.asObservable();
+  public getPaymentInProgressObservable(): Observable<boolean> {
+    return this.paymentInProgressSubject.asObservable();
   }
 
   ngOnDestroy() {
@@ -149,6 +198,16 @@ export class AppFlowService implements OnDestroy {
     if(this.paymentResponseSubscription) {
       this.paymentResponseSubscription.unsubscribe();
       this.paymentResponseSubscription = null;
+    }
+
+    if(this.paymentErrorSubscription) {
+      this.paymentErrorSubscription.unsubscribe();
+      this.paymentErrorSubscription = null;
+    }
+
+    if(this.genericErrorSubscription) {
+      this.genericErrorSubscription.unsubscribe();
+      this.genericErrorSubscription = null;
     }
   }
 

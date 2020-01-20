@@ -14,9 +14,9 @@ export class HomeComponent implements OnInit {
   pa: PaymentApi;
   paymentClient: PaymentClient;
 
-  processingServiceInstalled: Observable<boolean>;
-  processingServiceVersion: Observable<string>;
-  apiVersion: Observable<string>;
+  processingServiceInstalled: Promise<boolean>;
+  processingServiceVersion: Promise<string>;
+  apiVersion: Promise<string>;
   paymentSettings: Observable<PaymentSettings>;
 
   constructor(private appFlow: AppFlowService) {

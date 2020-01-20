@@ -45,7 +45,7 @@
                 <h4>No payment response</h4>
                 <p>There is no payment response stored by this application yet. <a routerLink="/payments">Please make a payment or refund first.</a></p>
             </div>
-            <button class="btn btn-primary" (click)="makeRequest()" [disabled]="!flowName || requestInProgress">Process request</button>
+            <button class="btn btn-primary" (click)="makeRequest()" [disabled]="!flowName || (requestInProgress | async)">Process request</button>
         </form>
     </div>
 </div>

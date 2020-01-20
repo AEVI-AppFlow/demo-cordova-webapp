@@ -32,8 +32,7 @@
   "devDependencies": {},
   "cordova": {
     "plugins": {
-      "cordova-plugin-whitelist": {},
-      "appflow-cordova-plugin": {}
+      "cordova-plugin-whitelist": {}
     },
     "platforms": [
       "android",

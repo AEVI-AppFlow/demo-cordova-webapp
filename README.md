@@ -23,7 +23,13 @@ The application can be built using the standard cordova CLI e.g.
 cordova build android --release
 ```
 
-The above will build a release version of the APK you can then install onto your Android device and use.
+The above will build a release version of the APK you can then install onto your Android device and use. You can then manually sign the APK with your chosen cert/key or alternatively use 
+
+```
+cordova run android --release -- --keystore=../my-release-key.keystore --storePassword=password --alias=alias_name --password=password
+```
+
+To pass in your keystore and password to sign the app during the build.
 
 OR
 

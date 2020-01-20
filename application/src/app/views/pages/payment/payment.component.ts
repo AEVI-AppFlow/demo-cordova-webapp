@@ -14,9 +14,6 @@ import { ResponseComponent } from 'src/app/components/response/response.componen
   styleUrls: ['./payment.component.scss']
 })
 export class PaymentComponent implements OnInit {
-  
-  private responseSubscription: Subscription; 
-  private paymentResponseSubscription: Subscription; 
 
   paymentSettings: Observable<PaymentSettings>;
 
@@ -31,43 +28,15 @@ export class PaymentComponent implements OnInit {
   addCardToken: boolean;
   enableSplit: boolean;
 
-  paymentInProgress = false;
+  paymentInProgress: Observable<Boolean>;
 
 
   constructor(private appFlow: AppFlowService, private modalService: NgbModal, private zone: NgZone) { 
     this.paymentSettings = this.appFlow.getPaymentClient().getPaymentSettings();
-
-    this.paymentResponseSubscription = appFlow.observePaymentResponses().subscribe((paymentResponse) => {
-      this.zone.run(() => { // this is required to allow the modal to popup correctly in the angular zone
-        const modalRef = this.modalService.open(PaymentResponseComponent);
-        modalRef.componentInstance.setPaymentResponse(paymentResponse);
-        modalRef.result.then((voidResponse) => {
-          this.paymentInProgress = false;
-          if(voidResponse) {
-            this.appFlow.sendVoidRequest(voidResponse);
-          }
-        }, (reason) => {
-          this.paymentInProgress = false;
-        });      
-      });
-    });
-
-    this.responseSubscription = this.appFlow.observeResponses().subscribe(response => {
-      this.zone.run(() => { // this is required to allow the modal to popup correctly in the angular zone
-        const modalRef = this.modalService.open(ResponseComponent);
-        modalRef.componentInstance.response = response;
-        modalRef.result.then((modalResponse) => {
-          this.paymentInProgress = false;
-        }, (reason) => {
-          this.paymentInProgress = false;
-        });      
-      });
-    });
+    this.paymentInProgress = this.appFlow.getPaymentInProgressObservable();
   }
 
   public makePayment() {
-    if(!this.paymentInProgress) {
-      this.paymentInProgress = true;
       var paymentBuilder = new PaymentBuilder().withPaymentFlow(this.flowName);
 
       let amounts: Amounts;
@@ -91,7 +60,6 @@ export class PaymentComponent implements OnInit {
 
       console.log(paymentBuilder.build());
       this.appFlow.initiatePayment(paymentBuilder.build());
-    }
   }
 
   public isUseableFlow(itemList: FlowConfig[]): FlowConfig[] {
@@ -162,11 +130,5 @@ export class PaymentComponent implements OnInit {
   }
 
   ngOnDestroy() {   
-    if(this.responseSubscription) {
-      this.responseSubscription.unsubscribe();
-    }
-    if(this.paymentResponseSubscription) {
-      this.paymentResponseSubscription.unsubscribe();
-    }
   }
 }

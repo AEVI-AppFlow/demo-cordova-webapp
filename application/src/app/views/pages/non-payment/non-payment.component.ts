@@ -20,9 +20,7 @@ export class NonPaymentComponent implements OnInit {
   private nonPaymentFlowTypes = ["tokenisation", "reversal", "receiptDelivery", SHOW_LOYALTY_POINTS_REQUEST, "basketStatusUpdate", "unsupportedFlowType"];
   private receiptDeliveryTypes = ["cash", "redeliver"];
 
-  private responseSubscription: Subscription;  
-
-  requestInProgress: boolean = false;
+  requestInProgress: Observable<boolean>;
   response: Observable<Response>;
   paymentSettings: Observable<PaymentSettings>;
   flowName = this.nonPaymentFlowTypes[0];
@@ -35,21 +33,8 @@ export class NonPaymentComponent implements OnInit {
     this.response = this.appFlow.getPaymentClient().subscribeToResponses().pipe(share());
     this.hasPaymentResponse = this.checkForPaymentAppResponse(appFlow.getLastResponse()) != null;
     this.paymentSettings = this.appFlow.getPaymentClient().getPaymentSettings();
-    this.responseSubscription = this.appFlow.observeResponses().subscribe((response) => {
-      this.zone.run(() => {
-        console.log("Got non-payment response");
-        console.log(response)
-        const modalRef = this.modalService.open(ResponseComponent);
-        modalRef.componentInstance.response = response;
-        modalRef.result.then((data) => {
-          this.requestInProgress = false;
-        }, (reason) => {
-          this.requestInProgress = false;        
-        });
-      });
-    });
-
     this.lastResponse = this.appFlow.getLastResponse();
+    this.requestInProgress = this.appFlow.getPaymentInProgressObservable();
   }
 
   public isUseableFlow(itemList: FlowConfig[]): FlowConfig[] {
@@ -63,19 +48,8 @@ export class NonPaymentComponent implements OnInit {
   }
 
   public makeRequest() {
-    if(!this.requestInProgress) {
-        this.requestInProgress = true;
-        var request = this.createRequest();
-        console.log("Sending request");
-        console.log(request);
-        this.appFlow.getPaymentClient().initiateRequest(request).then((response) => {
-          console.log(response);
-        }).catch((error)  => {
-          // TODO show error in app
-          console.log("Failed to initiate request");
-          console.log(error);
-        });
-    }
+      var request = this.createRequest();
+      this.appFlow.initiateRequest(request);
   }
 
   private createRequest(): Request {
@@ -152,6 +126,5 @@ export class NonPaymentComponent implements OnInit {
   ngOnInit() {
   }
   ngOnDestroy() {
-    this.responseSubscription.unsubscribe();
   }
 }
