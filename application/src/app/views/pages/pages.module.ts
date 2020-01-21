@@ -18,6 +18,7 @@ import { FlowConfigComponent } from 'src/app/components/flow-config/flow-config.
 import { FlowServiceComponent } from 'src/app/components/flow-service/flow-service.component';
 import { PaymentResponseComponent } from 'src/app/components/payment-response/payment-response.component';
 import { ResponseComponent } from 'src/app/components/response/response.component';
+import { FlowExceptionComponent } from 'src/app/components/flow-exception/flow-exception.component';
 
 @NgModule({
     declarations: [
@@ -42,7 +43,8 @@ import { ResponseComponent } from 'src/app/components/response/response.componen
         FlowConfigComponent,
         FlowServiceComponent,
         PaymentResponseComponent,
-        ResponseComponent
+        ResponseComponent,
+        FlowExceptionComponent
     ],
     providers: []
 })

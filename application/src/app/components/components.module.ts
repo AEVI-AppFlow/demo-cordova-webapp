@@ -13,6 +13,7 @@ import { FlowServiceComponent } from './flow-service/flow-service.component';
 import { PaymentResponseComponent } from './payment-response/payment-response.component';
 import { AdditionalDataComponent } from './additional-data/additional-data.component';
 import { ResponseComponent } from './response/response.component';
+import { FlowExceptionComponent } from './flow-exception/flow-exception.component';
 
 @NgModule({
     declarations: [
@@ -26,7 +27,8 @@ import { ResponseComponent } from './response/response.component';
         FlowServiceComponent,
         PaymentResponseComponent,
         AdditionalDataComponent,
-        ResponseComponent
+        ResponseComponent,
+        FlowExceptionComponent
     ],
     imports: [
         CommonModule, RouterModule

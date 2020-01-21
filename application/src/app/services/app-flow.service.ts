@@ -8,6 +8,7 @@ import { PaymentApiCordova } from 'appflow-cordova-plugin';
 
 import { PaymentResponseComponent } from 'src/app/components/payment-response/payment-response.component';
 import { ResponseComponent } from 'src/app/components/response/response.component';
+import { FlowExceptionComponent } from '../components/flow-exception/flow-exception.component';
 
 const LAST_RESPONSE = "lastResponse";
 const LAST_EVENTS = "lastEvents";
@@ -85,13 +86,15 @@ export class AppFlowService implements OnDestroy {
     this.paymentErrorSubscription = this.getPaymentClient().subscribeToPaymentResponseErrors().subscribe((error) => {
       console.log("Received an error from a payment request");
       console.log(error);
-      // TODO show error in app
+      const modalRef = this.modalService.open(FlowExceptionComponent);
+      modalRef.componentInstance.flowException = error;
     });
 
     this.genericErrorSubscription = this.getPaymentClient().subscribeToResponseErrors().subscribe((error) => {
       console.log("Received an error from a generic request");
       console.log(error);
-      // TODO show error in app
+      const modalRef = this.modalService.open(FlowExceptionComponent);
+      modalRef.componentInstance.flowException = error;
     });
   }
 
@@ -101,9 +104,10 @@ export class AppFlowService implements OnDestroy {
       this.getPaymentClient().initiateRequest(request).then((response) => {
         console.log(response);
       }).catch((error)  => {
-        // TODO show error in app
         console.log("Failed to initiate request");
         console.log(error);
+        const modalRef = this.modalService.open(FlowExceptionComponent);
+        modalRef.componentInstance.flowException = FlowException.from("FAILED TO SEND VOID", error);
       });
     } else {
       console.log("Failed to create void from response");
@@ -136,9 +140,10 @@ export class AppFlowService implements OnDestroy {
     this.getPaymentClient().initiatePayment(payment).then((response) => {
       console.log(response);
     }).catch((error)  => {
-      // TODO show error in app
       console.log("Failed to initiate payment");
       console.log(error);
+      const modalRef = this.modalService.open(FlowExceptionComponent);
+      modalRef.componentInstance.flowException = FlowException.from("FAILED TO INITIATE PAYMENT", error);
     });
   }
 
@@ -147,9 +152,10 @@ export class AppFlowService implements OnDestroy {
     this.getPaymentClient().initiateRequest(request).then((response) => {
       console.log(response);
     }).catch((error)  => {
-      // TODO show error in app
       console.log("Failed to initiate generic request");
       console.log(error);
+      const modalRef = this.modalService.open(FlowExceptionComponent);
+      modalRef.componentInstance.flowException = FlowException.from("FAILED TO INITIATE REQUEST", error);
     });
   }
 

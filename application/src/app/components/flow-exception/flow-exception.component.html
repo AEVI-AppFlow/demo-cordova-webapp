@@ -1,0 +1,12 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title">Flow Error</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body" *ngIf="flowException">
+        <h4 class="alert alert-danger">{{ flowException.errorCode }} </h4>
+        <p>{{ flowException.errorMessage }}</p>
+    </div>
+</div>
